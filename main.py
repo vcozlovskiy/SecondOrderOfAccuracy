@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plot
 import math
 
-m = 0.995
+m = 0.01 * 12 ** 1/3 #Возведение в степь 1/3 номера 12
 p = 1.2
 g = 9.81
 C = 0.5
@@ -21,13 +21,10 @@ xTrueArr = []
 uArr = [0,0]
 
 errors = []
-fig, axs = plot.subplots(2)
-axs[0].set_title("Синий - численный, ораньжевый - аналитич")
-axs[1].set_title("Ошибка, y - метры, x - секунды")
-plot.subplots_adjust(left= None, bottom= None,right= None, top= None, wspace= None, hspace= 0.367)
 odd = 0
 xSecondExsponent = [0,0]
 tSecondExsponent = [0,0]
+derivativeFuncWithUArr = [0,0]
 
 while tNow < tMax:
     a = -g + p * u0 * u0 * S * C / (2 * m)
@@ -42,17 +39,15 @@ while tNow < tMax:
     xSecondExsponent.append(xSecondExsponent[-1] + (xArr[-1] + xArr[-2]) / 2)
     tSecondExsponent.append(tNow)
 
+    derivativeFuncWithUArr.append((p * u0 * S * C) / m)
 
-    print("g = " + str(1 + ((p * u0 * S * C) / m) * tDelta))
-    if math.fabs(round(u0, -1)) == math.fabs(round(uArr[-2], -1)):
+    print("g = " + str((1 + (derivativeFuncWithUArr[-2]) * tDelta / 2) /
+                       (1 - (derivativeFuncWithUArr[-1]) * tDelta / 2)))
+    if math.fabs(round(u0, -3)) == math.fabs(round(uArr[-2], -3)):
         print("x = ", xSecondExsponent[-1], "u = ", u0)
 
-    xTrue = -(-330 - 68 * tNow + 476 * math.log(1 + math.e ** (0.287 * tNow)))
-    xTrueArr.append(xTrue)
-    errors.append(xSecondExsponent[-1] - xTrue)
+plot.xlabel("Время, с")
+plot.ylabel("Расстояние, м")
+plot.plot(tSecondExsponent, xSecondExsponent)
 
-axs[0].plot(tSecondExsponent, xSecondExsponent)
-axs[0].plot(timeArr, xTrueArr)
-
-axs[1].plot(timeArr, errors)
 plot.show()
